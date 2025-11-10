@@ -1,0 +1,33 @@
+<Window x:Class="XP_Hotkey.Views.QuickAddDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="Schnell hinzufügen" Height="300" Width="400"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="ToolWindow">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Label Grid.Row="0" Content="Kürzel:"/>
+        <TextBox Grid.Row="1" Name="ShortcutTextBox" Margin="0,5,0,10" KeyDown="ShortcutTextBox_KeyDown"/>
+
+        <Label Grid.Row="2" Content="Text:"/>
+        <TextBox Grid.Row="3" Name="TextTextBox" 
+                  TextWrapping="Wrap" AcceptsReturn="True"
+                  VerticalScrollBarVisibility="Auto" Margin="0,5,0,10"
+                  KeyDown="TextTextBox_KeyDown"/>
+
+        <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Content="Hinzufügen" Click="AddButton_Click" Width="75" Margin="5,0"/>
+            <Button Content="Abbrechen" Click="CancelButton_Click" Width="75" Margin="5,0"/>
+        </StackPanel>
+    </Grid>
+</Window>
+

@@ -1,0 +1,57 @@
+<Window x:Class="XP_Hotkey.Views.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="Einstellungen" Height="500" Width="600"
+        WindowStartupLocation="CenterOwner">
+    <TabControl Margin="10">
+        <TabItem Header="Trigger">
+            <StackPanel Margin="10">
+                <CheckBox Content="Leertaste als Trigger verwenden" Name="UseSpaceCheckBox" Margin="0,5"/>
+                <CheckBox Content="Tab als Trigger verwenden" Name="UseTabCheckBox" Margin="0,5"/>
+                <CheckBox Content="Enter als Trigger verwenden" Name="UseEnterCheckBox" Margin="0,5"/>
+                <Label Content="Maximale Buffer-Größe:" Margin="0,10,0,5"/>
+                <TextBox Name="MaxBufferSizeTextBox" Margin="0,0,0,10"/>
+            </StackPanel>
+        </TabItem>
+        <TabItem Header="Allgemein">
+            <StackPanel Margin="10">
+                <CheckBox Content="Beim Start minimieren" Name="StartMinimizedCheckBox" Margin="0,5"/>
+                <CheckBox Content="Im Systemtray minimieren" Name="MinimizeToTrayCheckBox" Margin="0,5"/>
+            </StackPanel>
+        </TabItem>
+        <TabItem Header="Theme">
+            <StackPanel Margin="10">
+                <CheckBox Content="Dark Mode aktivieren" Name="DarkModeCheckBox" Margin="0,5"/>
+                <Label Content="Akzentfarbe:" Margin="0,10,0,5"/>
+                <TextBox Name="AccentColorTextBox" Margin="0,0,0,10"/>
+            </StackPanel>
+        </TabItem>
+        <TabItem Header="Backup">
+            <StackPanel Margin="10">
+                <CheckBox Content="Automatisches Backup aktivieren" Name="AutoBackupCheckBox" Margin="0,5"/>
+                <Label Content="Backup-Intervall (Tage):" Margin="0,10,0,5"/>
+                <TextBox Name="BackupIntervalTextBox" Margin="0,0,0,10"/>
+                <Label Content="Maximale Anzahl Backups:" Margin="0,10,0,5"/>
+                <TextBox Name="MaxBackupsTextBox" Margin="0,0,0,10"/>
+            </StackPanel>
+        </TabItem>
+        <TabItem Header="App-Filter">
+            <Grid Margin="10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Label Grid.Row="0" Content="Whitelist:"/>
+                <ListBox Grid.Row="1" Name="WhitelistListBox" Margin="0,5,0,10"/>
+                <Label Grid.Row="2" Content="Blacklist:"/>
+                <ListBox Grid.Row="3" Name="BlacklistListBox" Margin="0,5"/>
+            </Grid>
+        </TabItem>
+    </TabControl>
+</Window>
+
