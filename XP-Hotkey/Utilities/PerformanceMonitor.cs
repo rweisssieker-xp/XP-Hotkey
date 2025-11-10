@@ -5,8 +5,8 @@ namespace XP_Hotkey.Utilities;
 
 public class PerformanceMonitor
 {
-    private readonly ConcurrentDictionary<string, List<long>> _measurements = new();
-    private readonly object _lock = new();
+    private readonly ConcurrentDictionary<string, ConcurrentQueue<long>> _measurements = new();
+    private const int MaxMeasurements = 100;
 
     public void StartMeasurement(string operationId, out Stopwatch stopwatch)
     {
@@ -18,43 +18,32 @@ public class PerformanceMonitor
         stopwatch.Stop();
         var elapsedMs = stopwatch.ElapsedMilliseconds;
 
-        _measurements.AddOrUpdate(
-            operationId,
-            new List<long> { elapsedMs },
-            (key, list) =>
-            {
-                lock (_lock)
-                {
-                    list.Add(elapsedMs);
-                    if (list.Count > 100) // Keep only last 100 measurements
-                    {
-                        list.RemoveAt(0);
-                    }
-                }
-                return list;
-            });
+        var queue = _measurements.GetOrAdd(operationId, _ => new ConcurrentQueue<long>());
+        queue.Enqueue(elapsedMs);
+
+        // Keep only last 100 measurements
+        while (queue.Count > MaxMeasurements)
+        {
+            queue.TryDequeue(out _);
+        }
     }
 
     public double GetAverageLatency(string operationId)
     {
-        if (!_measurements.TryGetValue(operationId, out var measurements) || measurements.Count == 0)
+        if (!_measurements.TryGetValue(operationId, out var measurements))
             return 0;
 
-        lock (_lock)
-        {
-            return measurements.Average();
-        }
+        var snapshot = measurements.ToArray();
+        return snapshot.Length > 0 ? snapshot.Average() : 0;
     }
 
     public long GetMaxLatency(string operationId)
     {
-        if (!_measurements.TryGetValue(operationId, out var measurements) || measurements.Count == 0)
+        if (!_measurements.TryGetValue(operationId, out var measurements))
             return 0;
 
-        lock (_lock)
-        {
-            return measurements.Max();
-        }
+        var snapshot = measurements.ToArray();
+        return snapshot.Length > 0 ? snapshot.Max() : 0;
     }
 
     public void ClearMeasurements(string? operationId = null)

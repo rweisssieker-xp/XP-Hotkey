@@ -11,13 +11,15 @@ namespace XP_Hotkey.Services;
 public class VariableProcessor
 {
     private readonly ClipboardHistoryService? _clipboardHistoryService;
+    private readonly PluginService? _pluginService;
     private readonly Dictionary<string, int> _counters = new();
     private readonly Dictionary<string, int> _namedCounters = new();
     private readonly Random _random = new();
 
-    public VariableProcessor(ClipboardHistoryService? clipboardHistoryService = null)
+    public VariableProcessor(ClipboardHistoryService? clipboardHistoryService = null, PluginService? pluginService = null)
     {
         _clipboardHistoryService = clipboardHistoryService;
+        _pluginService = pluginService;
     }
 
     public string ProcessVariables(string text, Snippet? snippet = null)
@@ -38,6 +40,7 @@ public class VariableProcessor
         result = ProcessCountVariables(result, snippet);
         result = ProcessConditionalVariables(result);
         result = ProcessRepeatVariables(result);
+        result = ProcessPluginVariables(result);
         // Note: {cursor} is handled specially in KeyboardHookService during text sending
 
         return result;
@@ -181,6 +184,50 @@ public class VariableProcessor
             var repeatText = match.Groups[1].Value;
             var count = int.Parse(match.Groups[2].Value);
             return string.Join("", Enumerable.Repeat(repeatText, count));
+        });
+    }
+
+    private string ProcessPluginVariables(string text)
+    {
+        if (_pluginService == null)
+            return text;
+
+        // Find all {variable} patterns that weren't handled by built-in processors
+        // This regex matches {variable} or {variable:param} patterns
+        return Regex.Replace(text, @"\{([^}:]+)(?::([^}]+))?\}", match =>
+        {
+            var variableName = match.Groups[1].Value;
+            var paramValue = match.Groups[2].Success ? match.Groups[2].Value : null;
+
+            // Skip built-in variables that should have been processed already
+            var builtInVariables = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "date", "time", "datetime", "username", "clipboard", "clipboard_history",
+                "random", "uuid", "count", "if", "repeat", "cursor"
+            };
+
+            if (builtInVariables.Contains(variableName))
+            {
+                // Return original if it's a built-in variable (shouldn't happen, but safe)
+                return match.Value;
+            }
+
+            // Prepare parameters dictionary
+            var parameters = new Dictionary<string, string>();
+            if (!string.IsNullOrEmpty(paramValue))
+            {
+                parameters["param"] = paramValue;
+            }
+
+            // Try to process via plugin service
+            var result = _pluginService.ProcessVariable(variableName, parameters);
+            if (result != null)
+            {
+                return result;
+            }
+
+            // If no plugin handled it, return original
+            return match.Value;
         });
     }
 

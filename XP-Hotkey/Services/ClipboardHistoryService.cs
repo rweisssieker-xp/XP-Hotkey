@@ -7,12 +7,14 @@ using XP_Hotkey.Utilities;
 
 namespace XP_Hotkey.Services;
 
-public class ClipboardHistoryService
+public class ClipboardHistoryService : IDisposable
 {
     private readonly List<string> _history = new();
     private readonly int _maxHistorySize;
     private readonly string _dataPath;
     private string? _lastClipboardText;
+    private System.Windows.Forms.Timer? _timer;
+    private bool _disposed = false;
 
     public ClipboardHistoryService(int maxHistorySize = 50, string dataPath = "Data")
     {
@@ -24,10 +26,10 @@ public class ClipboardHistoryService
 
     private void StartMonitoring()
     {
-        var timer = new System.Windows.Forms.Timer();
-        timer.Interval = 500; // Check every 500ms
-        timer.Tick += (s, e) => CheckClipboard();
-        timer.Start();
+        _timer = new System.Windows.Forms.Timer();
+        _timer.Interval = 500; // Check every 500ms
+        _timer.Tick += (s, e) => CheckClipboard();
+        _timer.Start();
     }
 
     private void CheckClipboard()
@@ -107,6 +109,17 @@ public class ClipboardHistoryService
         catch
         {
             // Ignore save errors
+        }
+    }
+
+    public void Dispose()
+    {
+        if (!_disposed)
+        {
+            _timer?.Stop();
+            _timer?.Dispose();
+            _timer = null;
+            _disposed = true;
         }
     }
 }

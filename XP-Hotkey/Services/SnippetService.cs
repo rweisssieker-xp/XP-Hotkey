@@ -101,6 +101,12 @@ public class SnippetService
     {
         lock (_lock)
         {
+            // Check for duplicate shortcut
+            if (_snippets.Any(s => s.Shortcut.Equals(snippet.Shortcut, StringComparison.OrdinalIgnoreCase)))
+            {
+                throw new InvalidOperationException($"Ein Snippet mit dem Kürzel '{snippet.Shortcut}' existiert bereits.");
+            }
+            
             if (string.IsNullOrEmpty(snippet.Id))
             {
                 snippet.Id = Guid.NewGuid().ToString();
@@ -119,6 +125,13 @@ public class SnippetService
             var existing = _snippets.FirstOrDefault(s => s.Id == snippet.Id);
             if (existing != null)
             {
+                // Check for duplicate shortcut (excluding current snippet)
+                if (_snippets.Any(s => s.Id != snippet.Id && 
+                    s.Shortcut.Equals(snippet.Shortcut, StringComparison.OrdinalIgnoreCase)))
+                {
+                    throw new InvalidOperationException($"Ein Snippet mit dem Kürzel '{snippet.Shortcut}' existiert bereits.");
+                }
+                
                 snippet.Modified = DateTime.Now;
                 var index = _snippets.IndexOf(existing);
                 _snippets[index] = snippet;
@@ -196,12 +209,17 @@ public class SnippetService
 
     public void LoadSnippets()
     {
+        LoadSnippetsAsync().GetAwaiter().GetResult();
+    }
+
+    private async Task LoadSnippetsAsync()
+    {
         var filePath = Path.Combine(_dataPath, "snippets.json");
         if (File.Exists(filePath))
         {
             try
             {
-                var snippets = JsonHelper.DeserializeFromFileAsync<List<Snippet>>(filePath).Result;
+                var snippets = await JsonHelper.DeserializeFromFileAsync<List<Snippet>>(filePath);
                 if (snippets != null)
                 {
                     lock (_lock)
@@ -210,14 +228,21 @@ public class SnippetService
                     }
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                // Ignore load errors, start with empty list
+                // Log error - in production use proper logging framework
+                System.Diagnostics.Debug.WriteLine($"Error loading snippets: {ex.Message}");
+                // Start with empty list on error
             }
         }
     }
 
     private void SaveSnippets()
+    {
+        SaveSnippetsAsync().GetAwaiter().GetResult();
+    }
+
+    private async Task SaveSnippetsAsync()
     {
         var filePath = Path.Combine(_dataPath, "snippets.json");
         try
@@ -227,47 +252,66 @@ public class SnippetService
             {
                 snippetsCopy = _snippets.ToList();
             }
-            JsonHelper.SerializeToFileAsync(snippetsCopy, filePath).Wait();
+            await JsonHelper.SerializeToFileAsync(snippetsCopy, filePath);
         }
-        catch
+        catch (Exception ex)
         {
-            // Log error in production
+            // Log error - in production use proper logging framework
+            System.Diagnostics.Debug.WriteLine($"Error saving snippets: {ex.Message}");
+            throw; // Re-throw to notify caller of save failure
         }
     }
 
     public void ExportToJson(string filePath)
     {
+        ExportToJsonAsync(filePath).GetAwaiter().GetResult();
+    }
+
+    public async Task ExportToJsonAsync(string filePath)
+    {
+        List<Snippet> snippetsCopy;
         lock (_lock)
         {
-            JsonHelper.SerializeToFileAsync(_snippets, filePath).Wait();
+            snippetsCopy = _snippets.ToList();
         }
+        await JsonHelper.SerializeToFileAsync(snippetsCopy, filePath);
     }
 
     public void ImportFromJson(string filePath)
     {
-        if (File.Exists(filePath))
+        ImportFromJsonAsync(filePath).GetAwaiter().GetResult();
+    }
+
+    public async Task ImportFromJsonAsync(string filePath)
+    {
+        if (!File.Exists(filePath))
         {
-            try
+            throw new FileNotFoundException("Import file not found", filePath);
+        }
+
+        try
+        {
+            var imported = await JsonHelper.DeserializeFromFileAsync<List<Snippet>>(filePath);
+            if (imported != null)
             {
-                var imported = JsonHelper.DeserializeFromFileAsync<List<Snippet>>(filePath).Result;
-                if (imported != null)
+                lock (_lock)
                 {
-                    lock (_lock)
+                    foreach (var snippet in imported)
                     {
-                        foreach (var snippet in imported)
-                        {
-                            // Generate new IDs for imported snippets
-                            snippet.Id = Guid.NewGuid().ToString();
-                            _snippets.Add(snippet);
-                        }
-                        SaveSnippets();
+                        // Generate new IDs for imported snippets to avoid conflicts
+                        snippet.Id = Guid.NewGuid().ToString();
+                        snippet.Created = DateTime.Now;
+                        snippet.Modified = DateTime.Now;
+                        _snippets.Add(snippet);
                     }
                 }
+                await SaveSnippetsAsync();
             }
-            catch
-            {
-                throw new Exception("Failed to import snippets from file");
-            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error importing snippets: {ex.Message}");
+            throw new Exception($"Failed to import snippets from file: {ex.Message}", ex);
         }
     }
 }

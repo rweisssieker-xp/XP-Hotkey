@@ -180,8 +180,19 @@ public class MainViewModel : INotifyPropertyChanged
         var snippet = new Snippet();
         if (ShowSnippetEditDialog(snippet))
         {
-            _snippetService.AddSnippet(snippet);
-            LoadSnippets();
+            try
+            {
+                _snippetService.AddSnippet(snippet);
+                LoadSnippets();
+            }
+            catch (InvalidOperationException ex)
+            {
+                System.Windows.MessageBox.Show(ex.Message, "Fehler", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show($"Fehler beim Hinzufügen: {ex.Message}", "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 
@@ -192,8 +203,19 @@ public class MainViewModel : INotifyPropertyChanged
         var snippet = CloneSnippet(SelectedSnippet);
         if (ShowSnippetEditDialog(snippet))
         {
-            _snippetService.UpdateSnippet(snippet);
-            LoadSnippets();
+            try
+            {
+                _snippetService.UpdateSnippet(snippet);
+                LoadSnippets();
+            }
+            catch (InvalidOperationException ex)
+            {
+                System.Windows.MessageBox.Show(ex.Message, "Fehler", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show($"Fehler beim Aktualisieren: {ex.Message}", "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 

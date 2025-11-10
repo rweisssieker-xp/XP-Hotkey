@@ -74,8 +74,21 @@ public class KeyboardHookService : IDisposable
     {
         using var curProcess = System.Diagnostics.Process.GetCurrentProcess();
         using var curModule = curProcess.MainModule;
-        return SetWindowsHookEx(WH_KEYBOARD_LL, proc,
-            GetModuleHandle(curModule?.ModuleName), 0);
+        
+        if (curModule?.ModuleName == null)
+        {
+            throw new InvalidOperationException("Failed to get current module name for keyboard hook");
+        }
+        
+        var hookId = SetWindowsHookEx(WH_KEYBOARD_LL, proc,
+            GetModuleHandle(curModule.ModuleName), 0);
+            
+        if (hookId == IntPtr.Zero)
+        {
+            throw new InvalidOperationException("Failed to install keyboard hook");
+        }
+        
+        return hookId;
     }
 
     private IntPtr HookCallback(int nCode, IntPtr wParam, IntPtr lParam)
@@ -204,6 +217,7 @@ public class KeyboardHookService : IDisposable
 
     private void DeleteText(int length)
     {
+        var delay = _config.Performance.BackspaceDelayMs;
         for (int i = 0; i < length; i++)
         {
             SendInput(1, new INPUT[]
@@ -219,7 +233,10 @@ public class KeyboardHookService : IDisposable
                 }
             }, Marshal.SizeOf(typeof(INPUT)));
             
-            Thread.Sleep(10); // Small delay
+            if (delay > 0)
+            {
+                Thread.Sleep(delay);
+            }
         }
     }
 
@@ -241,6 +258,7 @@ public class KeyboardHookService : IDisposable
 
     private void SendTextInternal(string text)
     {
+        var delay = _config.Performance.KeystrokeDelayMs;
         foreach (var ch in text)
         {
             if (ch == '\n')
@@ -251,12 +269,17 @@ public class KeyboardHookService : IDisposable
             else if (ch == '\r')
             {
                 // Ignore carriage return
+                continue;
             }
             else
             {
                 SendChar(ch);
             }
-            Thread.Sleep(5); // Small delay between characters
+            
+            if (delay > 0)
+            {
+                Thread.Sleep(delay);
+            }
         }
     }
 
