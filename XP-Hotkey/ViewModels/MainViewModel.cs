@@ -125,6 +125,11 @@ public class MainViewModel : INotifyPropertyChanged
     public ICommand ImportCommand { get; }
     public ICommand RefreshCommand { get; }
 
+    public void RefreshSnippets()
+    {
+        LoadSnippets();
+    }
+
     private void LoadSnippets()
     {
         var allSnippets = _snippetService.GetAllSnippets();

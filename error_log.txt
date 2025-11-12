@@ -1,0 +1,25 @@
+Fehler beim Starten der Anwendung:
+
+TwoWay- oder OneWayToSource-Bindungen funktionieren nicht mit der schreibgeschützten Eigenschaft "PreviewText" vom Typ "XP_Hotkey.ViewModels.MainViewModel".
+
+Stack Trace:
+   at MS.Internal.Data.PropertyPathWorker.CheckReadOnly(Object item, Object info)
+   at MS.Internal.Data.PropertyPathWorker.ReplaceItem(Int32 k, Object newO, Object parent)
+   at MS.Internal.Data.PropertyPathWorker.UpdateSourceValueState(Int32 k, ICollectionView collectionView, Object newValue, Boolean isASubPropertyChange)
+   at MS.Internal.Data.ClrBindingWorker.AttachDataItem()
+   at System.Windows.Data.BindingExpression.Activate(Object item)
+   at System.Windows.Data.BindingExpression.AttachToContext(AttachAttempt attempt)
+   at System.Windows.Data.BindingExpression.MS.Internal.Data.IDataBindEngineClient.AttachToContext(Boolean lastChance)
+   at MS.Internal.Data.DataBindEngine.Task.Run(Boolean lastChance)
+   at MS.Internal.Data.DataBindEngine.Run(Object arg)
+   at MS.Internal.Data.DataBindEngine.OnLayoutUpdated(Object sender, EventArgs e)
+   at System.Windows.ContextLayoutManager.fireLayoutUpdateEvent()
+   at System.Windows.ContextLayoutManager.UpdateLayout()
+   at System.Windows.Interop.HwndSource.SetLayoutSize()
+   at System.Windows.Interop.HwndSource.set_RootVisualInternal(Visual value)
+   at System.Windows.Window.SetRootVisualAndUpdateSTC()
+   at System.Windows.Window.SetupInitialState(Double requestedTop, Double requestedLeft, Double requestedWidth, Double requestedHeight)
+   at System.Windows.Window.CreateSourceWindow(Boolean duringShow)
+   at System.Windows.Window.ShowHelper(Object booleanBox)
+   at System.Windows.Window.Show()
+   at XP_Hotkey.App.OnStartup(StartupEventArgs e) in C:\tmp\XP-Hotkey2\XP-Hotkey\App.xaml.cs:line 116

@@ -1,0 +1,74 @@
+[2025-11-12T06:25:41.5680620+01:00] Application startup initiated
+[2025-11-12T06:26:35.3555367+01:00] Application startup initiated
+[2025-11-12T06:26:35.4066564+01:00] ConfigService initialized
+[2025-11-12T06:26:35.4081718+01:00] Configuration loaded
+[2025-11-12T06:27:41.4720146+01:00] Application startup initiated
+[2025-11-12T06:27:41.5226399+01:00] ConfigService initialized
+[2025-11-12T06:27:41.5237024+01:00] Configuration loaded
+[2025-11-12T06:27:41.5254328+01:00] Initializing PerformanceMonitor
+[2025-11-12T06:27:41.5264821+01:00] PerformanceMonitor initialized
+[2025-11-12T06:27:41.5275943+01:00] Initializing ClipboardHistoryService
+[2025-11-12T06:27:41.5418357+01:00] ClipboardHistoryService initialized
+[2025-11-12T06:27:41.5429807+01:00] Initializing SnippetService
+[2025-11-12T06:29:43.6903110+01:00] Application startup initiated
+[2025-11-12T06:29:43.7272360+01:00] ConfigService initialized
+[2025-11-12T06:29:43.7283862+01:00] Configuration loaded
+[2025-11-12T06:29:43.7291256+01:00] Initializing PerformanceMonitor
+[2025-11-12T06:29:43.7304079+01:00] PerformanceMonitor initialized
+[2025-11-12T06:29:43.7312588+01:00] Initializing ClipboardHistoryService
+[2025-11-12T06:29:43.7442173+01:00] ClipboardHistoryService initialized
+[2025-11-12T06:29:43.7449243+01:00] Initializing SnippetService
+[2025-11-12T06:29:43.7518261+01:00] SnippetService initialized
+[2025-11-12T06:29:43.7535069+01:00] Initializing PluginService
+[2025-11-12T06:29:43.7554299+01:00] PluginService initialized
+[2025-11-12T06:29:43.7558987+01:00] Initializing VariableProcessor
+[2025-11-12T06:29:43.7565850+01:00] VariableProcessor initialized
+[2025-11-12T06:29:43.7569714+01:00] Initializing AppFilterService
+[2025-11-12T06:29:43.7573382+01:00] AppFilterService initialized
+[2025-11-12T06:29:43.7583673+01:00] Initializing FormDialogService
+[2025-11-12T06:29:43.7588646+01:00] FormDialogService initialized
+[2025-11-12T06:29:43.7592204+01:00] Initializing BackupService
+[2025-11-12T06:29:43.7601058+01:00] BackupService initialized
+[2025-11-12T06:29:43.7611774+01:00] Initializing ThemeService
+[2025-11-12T06:29:43.7770774+01:00] ThemeService initialized
+[2025-11-12T06:29:43.7779037+01:00] Initializing HotkeyService
+[2025-11-12T06:29:43.7787768+01:00] HotkeyService initialized
+[2025-11-12T06:29:43.7792373+01:00] Core services initialized
+[2025-11-12T06:29:43.7827853+01:00] Keyboard hook started
+[2025-11-12T06:29:44.1235086+01:00] Main window instantiated
+[2025-11-12T06:29:44.3397346+01:00] Startup failed: TwoWay- oder OneWayToSource-Bindungen funktionieren nicht mit der schreibgeschützten Eigenschaft "PreviewText" vom Typ "XP_Hotkey.ViewModels.MainViewModel".
+[2025-11-12T06:30:38.0903030+01:00] Application startup initiated
+[2025-11-12T06:30:38.1384103+01:00] ConfigService initialized
+[2025-11-12T06:30:38.1392034+01:00] Configuration loaded
+[2025-11-12T06:30:38.1395560+01:00] Initializing PerformanceMonitor
+[2025-11-12T06:30:38.1400752+01:00] PerformanceMonitor initialized
+[2025-11-12T06:30:38.1404397+01:00] Initializing ClipboardHistoryService
+[2025-11-12T06:30:38.1644286+01:00] ClipboardHistoryService initialized
+[2025-11-12T06:30:38.1649697+01:00] Initializing SnippetService
+[2025-11-12T06:30:38.1720868+01:00] SnippetService initialized
+[2025-11-12T06:30:38.1732063+01:00] Initializing PluginService
+[2025-11-12T06:30:38.1742848+01:00] PluginService initialized
+[2025-11-12T06:30:38.1749106+01:00] Initializing VariableProcessor
+[2025-11-12T06:30:38.1756284+01:00] VariableProcessor initialized
+[2025-11-12T06:30:38.1762212+01:00] Initializing AppFilterService
+[2025-11-12T06:30:38.1773027+01:00] AppFilterService initialized
+[2025-11-12T06:30:38.1785060+01:00] Initializing FormDialogService
+[2025-11-12T06:30:38.1794479+01:00] FormDialogService initialized
+[2025-11-12T06:30:38.1802946+01:00] Initializing BackupService
+[2025-11-12T06:30:38.1813430+01:00] BackupService initialized
+[2025-11-12T06:30:38.1823443+01:00] Initializing ThemeService
+[2025-11-12T06:30:38.1862972+01:00] ThemeService initialized
+[2025-11-12T06:30:38.1868285+01:00] Initializing HotkeyService
+[2025-11-12T06:30:38.1882371+01:00] HotkeyService initialized
+[2025-11-12T06:30:38.1886381+01:00] Core services initialized
+[2025-11-12T06:30:38.1917082+01:00] Keyboard hook started
+[2025-11-12T06:30:38.4078397+01:00] Main window instantiated
+[2025-11-12T06:30:38.6137397+01:00] Main window shown normally
+[2025-11-12T06:30:38.6146048+01:00] Main window initialized, setting up system tray
+[2025-11-12T06:30:38.6214962+01:00] Setting up system tray...
+[2025-11-12T06:30:41.1719190+01:00] Tray icon created successfully via HICON clone
+[2025-11-12T06:30:41.1737046+01:00] Icon created: True
+[2025-11-12T06:30:41.1766284+01:00] NotifyIcon instantiated
+[2025-11-12T06:30:41.2969090+01:00] NotifyIcon visible set to: True
+[2025-11-12T06:30:41.3722666+01:00] Balloon tip shown
+[2025-11-12T06:31:45.8679633+01:00] Main window close intercepted; hiding instead

@@ -1,0 +1,1 @@
+[2025-11-12T06:23:56.7620026+01:00] Application startup initiated

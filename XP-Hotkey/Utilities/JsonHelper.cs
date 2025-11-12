@@ -28,7 +28,7 @@ public static class JsonHelper
         if (!File.Exists(filePath))
             return default;
 
-        var json = await File.ReadAllTextAsync(filePath);
+        var json = await File.ReadAllTextAsync(filePath).ConfigureAwait(false);
         return Deserialize<T>(json);
     }
 
@@ -41,7 +41,6 @@ public static class JsonHelper
         }
 
         var json = Serialize(obj);
-        await File.WriteAllTextAsync(filePath, json);
+        await File.WriteAllTextAsync(filePath, json).ConfigureAwait(false);
     }
 }
-

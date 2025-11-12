@@ -1,0 +1,33 @@
+{
+  "triggers": {
+    "useSpace": true,
+    "useTab": true,
+    "useEnter": false,
+    "maxBufferSize": 50
+  },
+  "startMinimized": false,
+  "minimizeToTray": true,
+  "theme": {
+    "themeName": "Light",
+    "useDarkMode": false,
+    "accentColor": "#0078D4"
+  },
+  "appWhitelist": [],
+  "appBlacklist": [],
+  "backup": {
+    "autoBackupEnabled": true,
+    "backupIntervalDays": 1,
+    "maxBackups": 30,
+    "backupLocation": "Data/backups"
+  },
+  "encryptSensitiveSnippets": false,
+  "performance": {
+    "enablePerformanceMonitoring": true,
+    "maxLatencyMs": 100,
+    "logSlowExpansions": false,
+    "keystrokeDelayMs": 5,
+    "backspaceDelayMs": 10
+  },
+  "showLivePreview": true,
+  "enableUndoRedo": true
+}

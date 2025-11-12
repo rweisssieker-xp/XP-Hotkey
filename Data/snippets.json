@@ -1,0 +1,26 @@
+[
+  {
+    "id": "01c4bd26-9b5c-41b3-8570-3184ad582391",
+    "shortcut": "mfg",
+    "text": "Mit freundlichem Gru\u00DF",
+    "description": "",
+    "categories": [],
+    "tags": [],
+    "isFavorite": false,
+    "caseSensitive": false,
+    "useRegex": false,
+    "formFields": [],
+    "statistics": {
+      "useCount": 1,
+      "firstUsed": "2025-11-12T06:31:29.9872682+01:00",
+      "lastUsed": "2025-11-12T06:31:29.9872705+01:00",
+      "totalTimeSaved": "00:00:00"
+    },
+    "created": "2025-11-12T06:31:10.4932747+01:00",
+    "modified": "2025-11-12T06:31:10.4933007+01:00",
+    "lastUsed": "2025-11-12T06:31:29.9871907+01:00",
+    "enabled": true,
+    "allowedApps": [],
+    "blockedApps": []
+  }
+]

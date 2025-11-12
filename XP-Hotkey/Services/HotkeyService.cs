@@ -9,12 +9,10 @@ public class HotkeyService
 {
     private readonly SnippetService _snippetService;
     private readonly Dictionary<string, KeyCombination> _registeredHotkeys = new();
-    private readonly KeyboardHookService _keyboardHook;
 
-    public HotkeyService(SnippetService snippetService, KeyboardHookService keyboardHook)
+    public HotkeyService(SnippetService snippetService)
     {
         _snippetService = snippetService;
-        _keyboardHook = keyboardHook;
         LoadHotkeys();
     }
 
@@ -33,7 +31,11 @@ public class HotkeyService
         SaveHotkeys();
     }
 
-    public bool ProcessHotkey(Key key, bool ctrl, bool alt, bool shift, bool win)
+    /// <summary>
+    /// Checks if the given key combination matches a registered hotkey and returns the snippet
+    /// </summary>
+    /// <returns>The snippet associated with the hotkey, or null if no match</returns>
+    public Snippet? ProcessHotkey(Key key, bool ctrl, bool alt, bool shift, bool win)
     {
         var combination = new KeyCombination
         {
@@ -48,12 +50,29 @@ public class HotkeyService
         if (hotkey.Key != null)
         {
             var snippet = _snippetService.GetSnippetById(hotkey.Key);
-            if (snippet != null)
+            if (snippet != null && snippet.Enabled)
             {
-                // Trigger snippet expansion
-                // This would need to be integrated with KeyboardHookService
-                return true;
+                return snippet;
             }
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Checks if a hotkey is already registered (for conflict detection)
+    /// </summary>
+    public bool IsHotkeyRegistered(string hotkeyString, out string? conflictingSnippetId)
+    {
+        conflictingSnippetId = null;
+        if (!TryParseHotkey(hotkeyString, out var combination))
+            return false;
+
+        var existing = _registeredHotkeys.FirstOrDefault(h => h.Value.Equals(combination));
+        if (existing.Key != null)
+        {
+            conflictingSnippetId = existing.Key;
+            return true;
         }
 
         return false;

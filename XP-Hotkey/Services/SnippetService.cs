@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using XP_Hotkey.Models;
 using XP_Hotkey.Utilities;
 
@@ -59,8 +60,65 @@ public class SnippetService
             {
                 return _snippets.FirstOrDefault(s => s.Shortcut == shortcut && s.Enabled);
             }
-            return _snippets.FirstOrDefault(s => 
+            return _snippets.FirstOrDefault(s =>
                 s.Shortcut.Equals(shortcut, StringComparison.OrdinalIgnoreCase) && s.Enabled);
+        }
+    }
+
+    /// <summary>
+    /// Finds a snippet matching the given buffer text, supporting both exact and regex matching
+    /// </summary>
+    /// <param name="buffer">The current buffer text to match against</param>
+    /// <returns>Tuple of matched snippet and matched text (for deletion), or null if no match</returns>
+    public (Snippet snippet, string matchedText)? FindMatchingSnippet(string buffer)
+    {
+        if (string.IsNullOrEmpty(buffer))
+            return null;
+
+        lock (_lock)
+        {
+            var enabledSnippets = _snippets.Where(s => s.Enabled).ToList();
+
+            // First, check for exact matches (non-regex snippets)
+            foreach (var snippet in enabledSnippets.Where(s => !s.UseRegex))
+            {
+                var comparison = snippet.CaseSensitive
+                    ? StringComparison.Ordinal
+                    : StringComparison.OrdinalIgnoreCase;
+
+                // Check if buffer ends with the shortcut
+                if (buffer.EndsWith(snippet.Shortcut, comparison))
+                {
+                    return (snippet, snippet.Shortcut);
+                }
+            }
+
+            // Then, check for regex matches
+            foreach (var snippet in enabledSnippets.Where(s => s.UseRegex))
+            {
+                try
+                {
+                    var regexOptions = snippet.CaseSensitive
+                        ? RegexOptions.None
+                        : RegexOptions.IgnoreCase;
+
+                    var regex = new Regex(snippet.Shortcut, regexOptions);
+                    var match = regex.Match(buffer);
+
+                    // Check if there's a match at the end of the buffer
+                    if (match.Success && match.Index + match.Length == buffer.Length)
+                    {
+                        return (snippet, match.Value);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // Log invalid regex patterns but don't crash
+                    System.Diagnostics.Debug.WriteLine($"Invalid regex in snippet '{snippet.Id}': {ex.Message}");
+                }
+            }
+
+            return null;
         }
     }
 
@@ -219,7 +277,7 @@ public class SnippetService
         {
             try
             {
-                var snippets = await JsonHelper.DeserializeFromFileAsync<List<Snippet>>(filePath);
+                var snippets = await JsonHelper.DeserializeFromFileAsync<List<Snippet>>(filePath).ConfigureAwait(false);
                 if (snippets != null)
                 {
                     lock (_lock)
@@ -252,7 +310,7 @@ public class SnippetService
             {
                 snippetsCopy = _snippets.ToList();
             }
-            await JsonHelper.SerializeToFileAsync(snippetsCopy, filePath);
+            await JsonHelper.SerializeToFileAsync(snippetsCopy, filePath).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -274,7 +332,7 @@ public class SnippetService
         {
             snippetsCopy = _snippets.ToList();
         }
-        await JsonHelper.SerializeToFileAsync(snippetsCopy, filePath);
+        await JsonHelper.SerializeToFileAsync(snippetsCopy, filePath).ConfigureAwait(false);
     }
 
     public void ImportFromJson(string filePath)
@@ -291,7 +349,7 @@ public class SnippetService
 
         try
         {
-            var imported = await JsonHelper.DeserializeFromFileAsync<List<Snippet>>(filePath);
+            var imported = await JsonHelper.DeserializeFromFileAsync<List<Snippet>>(filePath).ConfigureAwait(false);
             if (imported != null)
             {
                 lock (_lock)
@@ -305,7 +363,7 @@ public class SnippetService
                         _snippets.Add(snippet);
                     }
                 }
-                await SaveSnippetsAsync();
+                await SaveSnippetsAsync().ConfigureAwait(false);
             }
         }
         catch (Exception ex)

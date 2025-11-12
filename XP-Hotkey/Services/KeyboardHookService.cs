@@ -25,6 +25,7 @@ public class KeyboardHookService : IDisposable
     private readonly AppFilterService? _appFilterService;
     private readonly PerformanceMonitor _performanceMonitor;
     private readonly FormDialogService? _formDialogService;
+    private readonly HotkeyService? _hotkeyService;
     private AppConfig _config;
     private bool _isProcessing = false;
     private bool _disposed = false;
@@ -37,13 +38,15 @@ public class KeyboardHookService : IDisposable
         AppFilterService? appFilterService,
         PerformanceMonitor performanceMonitor,
         AppConfig config,
-        FormDialogService? formDialogService = null)
+        FormDialogService? formDialogService = null,
+        HotkeyService? hotkeyService = null)
     {
         _snippetService = snippetService;
         _variableProcessor = variableProcessor;
         _appFilterService = appFilterService;
         _performanceMonitor = performanceMonitor;
         _formDialogService = formDialogService;
+        _hotkeyService = hotkeyService;
         _config = config;
         _proc = HookCallback;
     }
@@ -115,6 +118,31 @@ public class KeyboardHookService : IDisposable
             return;
         }
 
+        // Check for hotkey combinations first (Ctrl, Alt, Shift, Win + Key)
+        if (_hotkeyService != null)
+        {
+            bool ctrl = Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl);
+            bool alt = Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt);
+            bool shift = Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift);
+            bool win = Keyboard.IsKeyDown(Key.LWin) || Keyboard.IsKeyDown(Key.RWin);
+
+            // Only check for hotkeys if any modifier is pressed
+            if (ctrl || alt || shift || win)
+            {
+                var snippet = _hotkeyService.ProcessHotkey(key, ctrl, alt, shift, win);
+                if (snippet != null)
+                {
+                    // Check if snippet is allowed in current app
+                    if (_appFilterService == null || _appFilterService.IsSnippetAllowedInCurrentApp(snippet))
+                    {
+                        _buffer.Clear(); // Clear buffer when hotkey is triggered
+                        ExpandSnippet(snippet, null);
+                        return;
+                    }
+                }
+            }
+        }
+
         // Check if trigger key
         bool isTrigger = false;
         if (_config.Triggers.UseSpace && key == Key.Space)
@@ -126,15 +154,19 @@ public class KeyboardHookService : IDisposable
 
         if (isTrigger && _buffer.Length > 0)
         {
-            var shortcut = _buffer.ToString();
+            var bufferContent = _buffer.ToString();
             _buffer.Clear();
 
-            // Find matching snippet
-            var snippet = _snippetService.GetSnippetByShortcut(shortcut, false);
-            if (snippet != null)
+            // Find matching snippet (supports both exact and regex matching)
+            var match = _snippetService.FindMatchingSnippet(bufferContent);
+            if (match != null)
             {
-                ExpandSnippet(snippet);
-                return; // Consume the trigger key
+                // Check if snippet is allowed in current app (per-snippet filtering)
+                if (_appFilterService == null || _appFilterService.IsSnippetAllowedInCurrentApp(match.Value.snippet))
+                {
+                    ExpandSnippet(match.Value.snippet, match.Value.matchedText);
+                    return; // Consume the trigger key
+                }
             }
         }
 
@@ -164,15 +196,16 @@ public class KeyboardHookService : IDisposable
         }
     }
 
-    private void ExpandSnippet(Snippet snippet)
+    private void ExpandSnippet(Snippet snippet, string? matchedText = null)
     {
         _isProcessing = true;
         _performanceMonitor.StartMeasurement("snippet_expansion", out var stopwatch);
 
         try
         {
-            // Delete the shortcut text
-            DeleteText(snippet.Shortcut.Length);
+            // Delete the matched text (or fallback to shortcut length)
+            var deleteLength = matchedText?.Length ?? snippet.Shortcut.Length;
+            DeleteText(deleteLength);
 
             // Handle form fields
             Dictionary<string, string>? formValues = null;

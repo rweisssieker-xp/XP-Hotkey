@@ -20,5 +20,7 @@ public class Snippet
     public DateTime LastUsed { get; set; } = DateTime.MinValue;
     public string? Hotkey { get; set; } // Format: "Ctrl+Shift+K"
     public bool Enabled { get; set; } = true;
+    public List<string> AllowedApps { get; set; } = new(); // If empty, allowed in all apps (unless global blacklist)
+    public List<string> BlockedApps { get; set; } = new(); // Apps where this snippet is blocked
 }
 

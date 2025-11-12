@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "ls2jBwXJ9Bg=",
+  "dgSpecHash": "c1IVogfQGK4=",
   "success": true,
-  "projectFilePath": "D:\\temp\\XP-Hotkey\\XP-Hotkey\\XP-Hotkey.csproj",
+  "projectFilePath": "C:\\tmp\\XP-Hotkey2\\XP-Hotkey\\XP-Hotkey.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\reinerw\\.nuget\\packages\\system.text.json\\9.0.10\\system.text.json.9.0.10.nupkg.sha512"
   ],
